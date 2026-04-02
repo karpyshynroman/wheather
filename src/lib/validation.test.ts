@@ -11,13 +11,10 @@ describe('location validation', () => {
   });
 
   it('rejects an empty value', () => {
-    expect(validateLocationInput('   ')).toContain('Enter a location to search for weather.');
+    expect(validateLocationInput('   ')).toContain('empty');
   });
 
   it('rejects unsupported characters', () => {
-    expect(validateLocationInput('Paris <>')).toContain(
-      'Use only letters, numbers, spaces, and basic punctuation.',
-    );
+    expect(validateLocationInput('Paris <>')).toContain('invalidCharacters');
   });
 });
-

@@ -1,66 +1,133 @@
+export type WeatherConditionKey =
+  | 'clearSky'
+  | 'mainlyClear'
+  | 'partlyCloudy'
+  | 'cloudy'
+  | 'overcast'
+  | 'fog'
+  | 'depositingRimeFog'
+  | 'lightDrizzle'
+  | 'drizzle'
+  | 'denseDrizzle'
+  | 'freezingDrizzle'
+  | 'denseFreezingDrizzle'
+  | 'slightRain'
+  | 'rain'
+  | 'heavyRain'
+  | 'freezingRain'
+  | 'heavyFreezingRain'
+  | 'slightSnowFall'
+  | 'snowFall'
+  | 'heavySnowFall'
+  | 'snowGrains'
+  | 'rainShowers'
+  | 'heavyRainShowers'
+  | 'violentRainShowers'
+  | 'snowShowers'
+  | 'heavySnowShowers'
+  | 'thunderstorm'
+  | 'thunderstormWithHail'
+  | 'severeThunderstormWithHail'
+  | 'unknown';
+
 export interface WeatherDescriptor {
-  condition: string;
+  conditionKey: WeatherConditionKey;
   icon: string;
 }
 
 const CODE_MAP: Record<number, WeatherDescriptor> = {
-  0: { condition: 'Clear sky', icon: 'sun' },
-  1: { condition: 'Mainly clear', icon: 'sun' },
-  2: { condition: 'Partly cloudy', icon: 'cloud-sun' },
-  3: { condition: 'Overcast', icon: 'cloud' },
-  45: { condition: 'Fog', icon: 'mist' },
-  48: { condition: 'Depositing rime fog', icon: 'mist' },
-  51: { condition: 'Light drizzle', icon: 'rain' },
-  53: { condition: 'Drizzle', icon: 'rain' },
-  55: { condition: 'Dense drizzle', icon: 'rain' },
-  56: { condition: 'Freezing drizzle', icon: 'sleet' },
-  57: { condition: 'Dense freezing drizzle', icon: 'sleet' },
-  61: { condition: 'Slight rain', icon: 'rain' },
-  63: { condition: 'Rain', icon: 'rain' },
-  65: { condition: 'Heavy rain', icon: 'rain' },
-  66: { condition: 'Freezing rain', icon: 'sleet' },
-  67: { condition: 'Heavy freezing rain', icon: 'sleet' },
-  71: { condition: 'Slight snow fall', icon: 'snow' },
-  73: { condition: 'Snow fall', icon: 'snow' },
-  75: { condition: 'Heavy snow fall', icon: 'snow' },
-  77: { condition: 'Snow grains', icon: 'snow' },
-  80: { condition: 'Rain showers', icon: 'rain' },
-  81: { condition: 'Heavy rain showers', icon: 'rain' },
-  82: { condition: 'Violent rain showers', icon: 'rain' },
-  85: { condition: 'Snow showers', icon: 'snow' },
-  86: { condition: 'Heavy snow showers', icon: 'snow' },
-  95: { condition: 'Thunderstorm', icon: 'storm' },
-  96: { condition: 'Thunderstorm with hail', icon: 'storm' },
-  99: { condition: 'Severe thunderstorm with hail', icon: 'storm' },
+  0: { conditionKey: 'clearSky', icon: 'sun' },
+  1: { conditionKey: 'mainlyClear', icon: 'sun' },
+  2: { conditionKey: 'partlyCloudy', icon: 'cloud-sun' },
+  3: { conditionKey: 'overcast', icon: 'cloud' },
+  45: { conditionKey: 'fog', icon: 'mist' },
+  48: { conditionKey: 'depositingRimeFog', icon: 'mist' },
+  51: { conditionKey: 'lightDrizzle', icon: 'rain' },
+  53: { conditionKey: 'drizzle', icon: 'rain' },
+  55: { conditionKey: 'denseDrizzle', icon: 'rain' },
+  56: { conditionKey: 'freezingDrizzle', icon: 'sleet' },
+  57: { conditionKey: 'denseFreezingDrizzle', icon: 'sleet' },
+  61: { conditionKey: 'slightRain', icon: 'rain' },
+  63: { conditionKey: 'rain', icon: 'rain' },
+  65: { conditionKey: 'heavyRain', icon: 'rain' },
+  66: { conditionKey: 'freezingRain', icon: 'sleet' },
+  67: { conditionKey: 'heavyFreezingRain', icon: 'sleet' },
+  71: { conditionKey: 'slightSnowFall', icon: 'snow' },
+  73: { conditionKey: 'snowFall', icon: 'snow' },
+  75: { conditionKey: 'heavySnowFall', icon: 'snow' },
+  77: { conditionKey: 'snowGrains', icon: 'snow' },
+  80: { conditionKey: 'rainShowers', icon: 'rain' },
+  81: { conditionKey: 'heavyRainShowers', icon: 'rain' },
+  82: { conditionKey: 'violentRainShowers', icon: 'rain' },
+  85: { conditionKey: 'snowShowers', icon: 'snow' },
+  86: { conditionKey: 'heavySnowShowers', icon: 'snow' },
+  95: { conditionKey: 'thunderstorm', icon: 'storm' },
+  96: { conditionKey: 'thunderstormWithHail', icon: 'storm' },
+  99: { conditionKey: 'severeThunderstormWithHail', icon: 'storm' },
 };
 
 export function describeOpenMeteoCode(code: number): WeatherDescriptor {
-  return CODE_MAP[code] ?? { condition: 'Unknown weather', icon: 'cloud' };
+  return CODE_MAP[code] ?? { conditionKey: 'unknown', icon: 'cloud' };
 }
 
 export function describeTextCondition(condition: string): WeatherDescriptor {
   const normalized = condition.toLowerCase();
 
+  if (normalized.includes('severe') && normalized.includes('hail')) {
+    return { conditionKey: 'severeThunderstormWithHail', icon: 'storm' };
+  }
+
+  if (normalized.includes('storm') && normalized.includes('hail')) {
+    return { conditionKey: 'thunderstormWithHail', icon: 'storm' };
+  }
+
   if (normalized.includes('storm') || normalized.includes('thunder')) {
-    return { condition, icon: 'storm' };
+    return { conditionKey: 'thunderstorm', icon: 'storm' };
   }
 
   if (normalized.includes('snow') || normalized.includes('sleet') || normalized.includes('hail')) {
-    return { condition, icon: 'snow' };
+    if (normalized.includes('heavy')) {
+      return { conditionKey: 'heavySnowShowers', icon: 'snow' };
+    }
+
+    return { conditionKey: 'snowShowers', icon: 'snow' };
   }
 
-  if (normalized.includes('rain') || normalized.includes('drizzle')) {
-    return { condition, icon: 'rain' };
+  if (normalized.includes('drizzle')) {
+    if (normalized.includes('heavy') || normalized.includes('dense')) {
+      return { conditionKey: 'denseDrizzle', icon: 'rain' };
+    }
+
+    return { conditionKey: 'drizzle', icon: 'rain' };
+  }
+
+  if (normalized.includes('rain')) {
+    if (normalized.includes('heavy') || normalized.includes('violent')) {
+      return { conditionKey: 'heavyRainShowers', icon: 'rain' };
+    }
+
+    return { conditionKey: 'rainShowers', icon: 'rain' };
   }
 
   if (normalized.includes('mist') || normalized.includes('fog')) {
-    return { condition, icon: 'mist' };
+    return { conditionKey: 'fog', icon: 'mist' };
+  }
+
+  if (normalized.includes('partly')) {
+    return { conditionKey: 'partlyCloudy', icon: 'cloud-sun' };
+  }
+
+  if (normalized.includes('overcast')) {
+    return { conditionKey: 'overcast', icon: 'cloud' };
   }
 
   if (normalized.includes('cloud')) {
-    return normalized.includes('partly') ? { condition, icon: 'cloud-sun' } : { condition, icon: 'cloud' };
+    return { conditionKey: 'cloudy', icon: 'cloud' };
   }
 
-  return { condition, icon: 'sun' };
-}
+  if (normalized.includes('clear')) {
+    return { conditionKey: 'clearSky', icon: 'sun' };
+  }
 
+  return { conditionKey: 'unknown', icon: 'sun' };
+}

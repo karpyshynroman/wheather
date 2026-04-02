@@ -8,5 +8,8 @@ afterEach(() => {
     providerId: 'open-meteo',
     draftLocation: '',
     activeLocation: '',
+    language: 'en',
   });
+  window.localStorage.removeItem('weather-language');
+  document.documentElement.lang = 'en';
 });

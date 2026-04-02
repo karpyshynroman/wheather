@@ -1,10 +1,13 @@
 import type { WeatherProviderDefinition } from '../lib/types';
+import { useTranslation } from '../hooks/useTranslation';
 
 interface ProviderPlaceholderProps {
   provider: WeatherProviderDefinition;
 }
 
 export function ProviderPlaceholder({ provider }: ProviderPlaceholderProps) {
+  const { t } = useTranslation();
+
   return (
     <section className="overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.04] shadow-glow">
       <div className="relative flex min-h-[520px] items-center justify-center p-6 sm:p-8">
@@ -24,7 +27,7 @@ export function ProviderPlaceholder({ provider }: ProviderPlaceholderProps) {
             }}
           >
             <div className="text-center">
-              <div className="text-xs uppercase tracking-[0.24em] text-white/45">Provider</div>
+              <div className="text-xs uppercase tracking-[0.24em] text-white/45">{t('provider.placeholder')}</div>
               <div className="mt-2 text-2xl font-semibold text-white">{provider.name}</div>
             </div>
           </div>

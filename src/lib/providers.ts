@@ -1,4 +1,6 @@
 import { fetchJson } from './http';
+import { translate, type Language } from './i18n';
+import { WeatherError } from './errors';
 import { describeOpenMeteoCode, describeTextCondition } from './weather-code';
 import type { WeatherProviderDefinition, WeatherProviderId, WeatherSnapshot } from './types';
 
@@ -47,15 +49,15 @@ function formatLocationName(parts: Array<string | undefined>): string {
   return parts.filter(Boolean).join(', ');
 }
 
-async function fetchOpenMeteo(location: string, signal?: AbortSignal): Promise<WeatherSnapshot> {
+async function fetchOpenMeteo(location: string, signal?: AbortSignal, language: Language = 'en'): Promise<WeatherSnapshot> {
   const geo = await fetchJson<OpenMeteoGeocodeResponse>(
-    `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(location)}&count=1&language=en&format=json`,
+    `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(location)}&count=1&language=${language}&format=json`,
     { signal },
   );
 
   const result = geo.results?.[0];
   if (!result) {
-    throw new Error('No matching location was found.');
+    throw new WeatherError('locationNotFound');
   }
 
   const weather = await fetchJson<OpenMeteoWeatherResponse>(
@@ -64,7 +66,7 @@ async function fetchOpenMeteo(location: string, signal?: AbortSignal): Promise<W
   );
 
   if (!weather.current) {
-    throw new Error('Weather data is unavailable for this location.');
+    throw new WeatherError('weatherUnavailable');
   }
 
   const descriptor = describeOpenMeteoCode(weather.current.weather_code);
@@ -72,7 +74,7 @@ async function fetchOpenMeteo(location: string, signal?: AbortSignal): Promise<W
   return {
     locationName: formatLocationName([result.name, result.admin1, result.country]),
     sourceLabel: 'Open-Meteo',
-    condition: descriptor.condition,
+    condition: translate(language, `weather.${descriptor.conditionKey}`),
     icon: descriptor.icon,
     temperatureC: weather.current.temperature_2m,
     feelsLikeC: weather.current.apparent_temperature,
@@ -118,14 +120,14 @@ function isoNowFromObservation(observation: string): string {
   return local.toISOString();
 }
 
-async function fetchWttr(location: string, signal?: AbortSignal): Promise<WeatherSnapshot> {
+async function fetchWttr(location: string, signal?: AbortSignal, language: Language = 'en'): Promise<WeatherSnapshot> {
   const data = await fetchJson<WttrResponse>(`https://wttr.in/${encodeURIComponent(location)}?format=j1`, {
     signal,
   });
 
   const current = data.current_condition?.[0];
   if (!current) {
-    throw new Error('Weather data is unavailable for this location.');
+    throw new WeatherError('weatherUnavailable');
   }
 
   const descriptor = describeTextCondition(current.weatherDesc?.[0]?.value ?? 'Clear');
@@ -139,7 +141,7 @@ async function fetchWttr(location: string, signal?: AbortSignal): Promise<Weathe
   return {
     locationName: locationName || location,
     sourceLabel: 'WTTR',
-    condition: descriptor.condition,
+    condition: translate(language, `weather.${descriptor.conditionKey}`),
     icon: descriptor.icon,
     temperatureC: toNumber(current.temp_C),
     feelsLikeC: toNumber(current.FeelsLikeC),

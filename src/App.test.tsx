@@ -82,4 +82,17 @@ describe('App', () => {
     expect(await screen.findByText('Tallinn, Harju County, Estonia')).toBeInTheDocument();
     expect(screen.getByText('7')).toBeInTheDocument();
   });
+
+  it('switches the interface language', async () => {
+    render(<App />);
+
+    expect(screen.getByRole('button', { name: /show weather/i })).toBeInTheDocument();
+    expect(screen.getByText('Provider')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: /deutsch/i }));
+
+    expect(screen.getByRole('button', { name: /wetter anzeigen/i })).toBeInTheDocument();
+    expect(screen.getByText('Anbieter')).toBeInTheDocument();
+    expect(screen.getByPlaceholderText(/versuche helsinki/i)).toBeInTheDocument();
+  });
 });

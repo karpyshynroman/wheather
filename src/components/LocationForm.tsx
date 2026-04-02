@@ -1,3 +1,5 @@
+import { useTranslation } from '../hooks/useTranslation';
+
 interface LocationFormProps {
   value: string;
   errors: string[];
@@ -7,6 +9,8 @@ interface LocationFormProps {
 }
 
 export function LocationForm({ value, errors, onChange, onSubmit, isSubmitting }: LocationFormProps) {
+  const { t } = useTranslation();
+
   return (
     <form
       className="space-y-3"
@@ -16,11 +20,11 @@ export function LocationForm({ value, errors, onChange, onSubmit, isSubmitting }
       }}
     >
       <label className="block space-y-2">
-        <span className="text-sm font-medium uppercase tracking-[0.2em] text-white/55">Location</span>
+        <span className="text-sm font-medium uppercase tracking-[0.2em] text-white/55">{t('form.locationLabel')}</span>
         <input
           value={value}
           onChange={(event) => onChange(event.target.value)}
-          placeholder="Try Helsinki, Tokyo, or New York"
+          placeholder={t('form.placeholder')}
           className="w-full rounded-3xl border border-white/10 bg-slate-950/55 px-4 py-4 text-base text-white outline-none transition placeholder:text-white/30 focus:border-cyan-300/50 focus:ring-2 focus:ring-cyan-300/20"
           autoCapitalize="words"
           autoComplete="off"
@@ -40,7 +44,7 @@ export function LocationForm({ value, errors, onChange, onSubmit, isSubmitting }
         disabled={isSubmitting}
         className="w-full rounded-3xl bg-white px-4 py-4 text-base font-semibold text-slate-950 transition hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-60"
       >
-        {isSubmitting ? 'Loading weather…' : 'Show weather'}
+        {isSubmitting ? t('form.loading') : t('form.submit')}
       </button>
     </form>
   );
