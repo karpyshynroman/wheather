@@ -1,6 +1,7 @@
 import { QueryClientProvider } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 import { LocationForm } from './components/LocationForm';
+import { ProviderPlaceholder } from './components/ProviderPlaceholder';
 import { ProviderSwitcher } from './components/ProviderSwitcher';
 import { WeatherPanel } from './components/WeatherPanel';
 import { providerDefinitions } from './lib/providers';
@@ -26,15 +27,15 @@ function AppShell() {
     }
 
     if (weatherQuery.isFetching && weatherQuery.data) {
-      return `Refreshing ${activeLocation} with ${provider.shortName}.`;
+      return `Refreshing ${activeLocation} with ${provider.name}.`;
     }
 
     if (weatherQuery.isFetching) {
-      return `Loading ${activeLocation} with ${provider.shortName}.`;
+      return `Loading ${activeLocation} with ${provider.name}.`;
     }
 
-    return `Showing ${activeLocation} with ${provider.shortName}.`;
-  }, [activeLocation, provider.shortName, weatherQuery.data, weatherQuery.isFetching]);
+    return `Showing ${activeLocation} with ${provider.name}.`;
+  }, [activeLocation, provider.name, weatherQuery.data, weatherQuery.isFetching]);
 
   const handleSubmit = () => {
     const errors = validateLocationInput(draftLocation);
@@ -63,10 +64,6 @@ function AppShell() {
           <div className="relative grid gap-6 lg:grid-cols-[1.02fr_0.98fr] lg:gap-8">
             <div className="space-y-5 lg:space-y-6">
               <header className="space-y-3 lg:space-y-4">
-                <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs uppercase tracking-[0.24em] text-white/60">
-                  <span className="h-2 w-2 rounded-full" style={{ backgroundColor: provider.accent }} />
-                  {provider.name}
-                </div>
                 <div className="space-y-4">
                   <p className="max-w-prose text-sm leading-7 text-white/62 sm:text-base lg:text-lg lg:leading-8">
                     Choose provider
@@ -102,11 +99,15 @@ function AppShell() {
             </div>
 
             <div className="lg:sticky lg:top-8 lg:self-start">
-              <WeatherPanel
-                loading={weatherQuery.isFetching && !weatherQuery.data}
-                snapshot={weatherQuery.data}
-                error={weatherQuery.error instanceof Error ? weatherQuery.error.message : undefined}
-              />
+              {!weatherQuery.data && !weatherQuery.isFetching ? (
+                <ProviderPlaceholder provider={provider} />
+              ) : (
+                <WeatherPanel
+                  loading={weatherQuery.isFetching && !weatherQuery.data}
+                  snapshot={weatherQuery.data}
+                  error={weatherQuery.error instanceof Error ? weatherQuery.error.message : undefined}
+                />
+              )}
             </div>
           </div>
         </section>

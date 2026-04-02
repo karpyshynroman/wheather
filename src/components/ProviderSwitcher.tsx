@@ -36,9 +36,6 @@ export function ProviderSwitcher({ value, onChange }: ProviderSwitcherProps) {
             />
             <span className="relative flex items-center justify-between gap-3">
               <span className="space-y-1">
-                <span className="block text-sm font-medium uppercase tracking-[0.22em] text-white/60">
-                  {provider.shortName}
-                </span>
                 <span className="block text-lg font-semibold text-white">{provider.name}</span>
               </span>
               <span

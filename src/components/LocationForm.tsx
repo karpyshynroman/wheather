@@ -28,14 +28,12 @@ export function LocationForm({ value, errors, onChange, onSubmit, isSubmitting }
           spellCheck={false}
         />
       </label>
-      {errors.length > 0 ? (
+      {errors.length > 0 && (
         <ul className="space-y-1 rounded-3xl border border-rose-400/20 bg-rose-500/10 p-4 text-sm text-rose-100">
           {errors.map((error) => (
             <li key={error}>{error}</li>
           ))}
         </ul>
-      ) : (
-        <p className="text-sm text-white/50">Validation runs before the query is sent.</p>
       )}
       <button
         type="submit"
