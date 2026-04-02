@@ -1,0 +1,16 @@
+node_modules/
+dist/
+.idea/
+.env
+.vscode/
+coverage/
+*.tsbuildinfo
+vite.config.js
+vite.config.d.ts
+tailwind.config.js
+tailwind.config.d.ts
+# Default ignored files
+/shelf/
+/workspace.xml
+# Editor-based HTTP Client requests
+/httpRequests/
