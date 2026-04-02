@@ -69,13 +69,7 @@ export function WeatherPanel({ snapshot, loading, error }: WeatherPanelProps) {
     );
   }
 
-  if (!snapshot) {
-    return (
-      <div className="rounded-[2rem] border border-dashed border-white/12 bg-white/[0.03] p-5 text-white/58">
-        Enter a location and choose a provider to load live weather.
-      </div>
-    );
-  }
+  if (!snapshot) return '';
 
   return (
     <section className="overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.04] shadow-glow">

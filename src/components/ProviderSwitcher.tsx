@@ -46,7 +46,6 @@ export function ProviderSwitcher({ value, onChange }: ProviderSwitcherProps) {
                 style={{ backgroundColor: active ? provider.accent : 'rgba(255,255,255,0.35)' }}
               />
             </span>
-            <span className="relative mt-3 block text-sm leading-6 text-white/72">{provider.tagline}</span>
           </button>
         );
       })}

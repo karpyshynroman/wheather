@@ -155,8 +155,6 @@ export const providerDefinitions: Record<WeatherProviderId, WeatherProviderDefin
   'open-meteo': {
     id: 'open-meteo',
     name: 'Open-Meteo',
-    shortName: 'Open-Meteo',
-    tagline: 'Fast global coverage',
     accent: '#61dafb',
     accentSoft: 'rgba(97, 218, 251, 0.16)',
     emphasis: 'from-cyan-400 via-sky-500 to-indigo-500',
@@ -164,8 +162,6 @@ export const providerDefinitions: Record<WeatherProviderId, WeatherProviderDefin
   wttr: {
     id: 'wttr',
     name: 'WTTR',
-    shortName: 'WTTR',
-    tagline: 'Direct text-first weather feed',
     accent: '#ff9f6f',
     accentSoft: 'rgba(255, 159, 111, 0.16)',
     emphasis: 'from-orange-400 via-rose-500 to-fuchsia-500',

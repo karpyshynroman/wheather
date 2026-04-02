@@ -17,8 +17,6 @@ export interface WeatherSnapshot {
 export interface WeatherProviderDefinition {
   id: WeatherProviderId;
   name: string;
-  shortName: string;
-  tagline: string;
   accent: string;
   accentSoft: string;
   emphasis: string;
