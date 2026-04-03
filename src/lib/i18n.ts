@@ -17,7 +17,6 @@ const LANGUAGE_LABELS: Record<Language, string> = {
 const translations: Record<Language, TranslationNode> = {
   en: {
     app: {
-      chooseProvider: 'Choose provider',
       status: {
         label: 'Status',
         idle: 'Search a location to fetch live data.',
@@ -91,7 +90,6 @@ const translations: Record<Language, TranslationNode> = {
   },
   de: {
     app: {
-      chooseProvider: 'Anbieter wählen',
       status: {
         label: 'Status',
         idle: 'Suche einen Ort, um Live-Daten abzurufen.',
@@ -165,7 +163,6 @@ const translations: Record<Language, TranslationNode> = {
   },
   uk: {
     app: {
-      chooseProvider: 'Оберіть провайдера',
       status: {
         label: 'Статус',
         idle: 'Почніть пошук міста, щоб отримати погоду.',

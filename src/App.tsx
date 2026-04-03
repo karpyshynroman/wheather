@@ -93,9 +93,6 @@ function AppShell() {
             <div className="space-y-5 lg:space-y-6">
               <header className="space-y-4 lg:space-y-5">
                 <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-                  <p className="max-w-prose text-sm leading-7 text-white/62 sm:text-base lg:text-lg lg:leading-8">
-                    {t('app.chooseProvider')}
-                  </p>
                   <div className="w-full max-w-xs lg:w-72">
                     <LanguageSwitcher value={language} onChange={setLanguage} />
                   </div>
