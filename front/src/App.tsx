@@ -7,7 +7,7 @@ import { ProviderPlaceholder } from './components/ProviderPlaceholder';
 import { ProviderSwitcher } from './components/ProviderSwitcher';
 import { SearchHistoryPanel } from './components/SearchHistoryPanel';
 import { WeatherPanel } from './components/WeatherPanel';
-import { fetchCurrentUser, fetchSearchHistory } from './lib/auth-api';
+import { fetchCurrentUser } from './lib/auth-api';
 import { ApiError } from './lib/api';
 import { useTranslation } from './hooks/useTranslation';
 import { WeatherError } from './lib/errors';
@@ -16,11 +16,11 @@ import { queryClient } from './lib/query-client';
 import { normalizeLocationInput, validateLocationInput } from './lib/validation';
 import type { LocationValidationErrorCode } from './lib/validation';
 import { useAuthMutation } from './hooks/useAuthMutation';
+import { useHistoryQuery } from './hooks/useHistoryQuery';
 import { useSaveSearchMutation } from './hooks/useSaveSearchMutation';
 import { useWeatherQuery } from './hooks/useWeatherQuery';
 import { useAuthStore } from './store/auth-store';
 import { useWeatherStore } from './store/weather-store';
-import { useQuery } from '@tanstack/react-query';
 
 function AppShell() {
   const providerId = useWeatherStore((state) => state.providerId);
@@ -117,16 +117,10 @@ function AppShell() {
     },
   });
 
-  const historyQuery = useQuery({
-    queryKey: ['history', user?.id],
-    enabled: Boolean(token && user),
-    queryFn: async () => {
-      if (!token) {
-        return [];
-      }
-
-      return fetchSearchHistory(token);
-    },
+  const historyQuery = useHistoryQuery({
+    token,
+    userId: user?.id ?? null,
+    enabled: Boolean(user),
   });
 
   const statusText = useMemo(() => {
