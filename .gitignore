@@ -1,16 +1,38 @@
-node_modules/
-dist/
-.idea/
-.env
-.vscode/
-coverage/
+# Dependencies
+/node_modules/
+/front/node_modules/
+/back/node_modules/
+
+# Build outputs
+/dist/
+/front/dist/
+/back/dist/
+/coverage/
+/front/coverage/
+/back/coverage/
+
+# Vite / TS caches
+/.vite/
+/front/.vite/
+/back/.vite/
 *.tsbuildinfo
-vite.config.js
-vite.config.d.ts
-tailwind.config.js
-tailwind.config.d.ts
-# Default ignored files
-/shelf/
+/front/*.tsbuildinfo
+/back/*.tsbuildinfo
+
+# Env files
+.env
+.env.*
+/front/.env
+/front/.env.*
+/back/.env
+/back/.env.*
+
+# Editor and IDE files
+.idea/
+.vscode/
+/.shelf/
 /workspace.xml
-# Editor-based HTTP Client requests
-/httpRequests/
+/.httpRequests/
+*.swp
+*.swo
+.DS_Store
