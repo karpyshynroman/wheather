@@ -49,7 +49,7 @@ cd front
 npm install
 npm run dev
 ```
-Manual run - port `5372`
+Manual run - port `5173`
 
 Docker run - port `3000`
 
