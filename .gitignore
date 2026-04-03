@@ -7,9 +7,12 @@
 /dist/
 /front/dist/
 /back/dist/
+/back/build/
+/back/node_modules
 /coverage/
 /front/coverage/
 /back/coverage/
+/back/.nyc_output/
 
 # Vite / TS caches
 /.vite/
@@ -26,6 +29,17 @@
 /front/.env.*
 /back/.env
 /back/.env.*
+
+# Backend runtime and logs
+/back/logs/
+/back/.temp/
+/back/.tmp/
+/back/pids/
+/back/*.pid
+/back/*.pid.lock
+/back/*.seed
+/back/report.*.json
+/back/*.log
 
 # Editor and IDE files
 .idea/
