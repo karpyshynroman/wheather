@@ -28,6 +28,27 @@ const translations: Record<Language, TranslationNode> = {
     language: {
       label: 'Language',
     },
+    auth: {
+      label: 'Account',
+      open: 'Account',
+      emailLabel: 'Email',
+      passwordLabel: 'Password',
+      login: 'Log in',
+      register: 'Create account',
+      logout: 'Log out',
+      close: 'Close',
+      submitting: 'Submitting…',
+      email: {
+        required: 'Enter an email address.',
+        invalid: 'Enter a valid email address.',
+        tooLong: 'Email must be 254 characters or fewer.',
+      },
+      password: {
+        required: 'Enter a password.',
+        tooShort: 'Password must be at least 8 characters.',
+        tooLong: 'Password must be 128 characters or fewer.',
+      },
+    },
     form: {
       locationLabel: 'Location',
       placeholder: 'Try Helsinki, Tokyo, or New York',
@@ -43,6 +64,11 @@ const translations: Record<Language, TranslationNode> = {
     },
     provider: {
       placeholder: 'Provider',
+    },
+    history: {
+      label: 'History',
+      title: 'Weather searches',
+      empty: 'No saved weather searches yet.',
     },
     weather: {
       unavailable: 'Weather unavailable',
@@ -101,6 +127,27 @@ const translations: Record<Language, TranslationNode> = {
     language: {
       label: 'Sprache',
     },
+    auth: {
+      label: 'Konto',
+      open: 'Konto',
+      emailLabel: 'E-Mail',
+      passwordLabel: 'Passwort',
+      login: 'Anmelden',
+      register: 'Konto erstellen',
+      logout: 'Abmelden',
+      close: 'Schließen',
+      submitting: 'Wird gesendet…',
+      email: {
+        required: 'Gib eine E-Mail-Adresse ein.',
+        invalid: 'Gib eine gültige E-Mail-Adresse ein.',
+        tooLong: 'Die E-Mail darf höchstens 254 Zeichen lang sein.',
+      },
+      password: {
+        required: 'Gib ein Passwort ein.',
+        tooShort: 'Das Passwort muss mindestens 8 Zeichen haben.',
+        tooLong: 'Das Passwort darf höchstens 128 Zeichen lang sein.',
+      },
+    },
     form: {
       locationLabel: 'Ort',
       placeholder: 'Versuche Helsinki, Tokio oder New York',
@@ -116,6 +163,11 @@ const translations: Record<Language, TranslationNode> = {
     },
     provider: {
       placeholder: 'Anbieter',
+    },
+    history: {
+      label: 'Verlauf',
+      title: 'Wetter-Suchen',
+      empty: 'Noch keine gespeicherten Wetter-Suchen.',
     },
     weather: {
       unavailable: 'Wetter nicht verfügbar',
@@ -174,6 +226,27 @@ const translations: Record<Language, TranslationNode> = {
     language: {
       label: 'Мова',
     },
+    auth: {
+      label: 'Обліковий запис',
+      open: 'Обліковий запис',
+      emailLabel: 'Email',
+      passwordLabel: 'Пароль',
+      login: 'Увійти',
+      register: 'Створити акаунт',
+      logout: 'Вийти',
+      close: 'Закрити',
+      submitting: 'Надсилання…',
+      email: {
+        required: 'Введіть адресу електронної пошти.',
+        invalid: 'Введіть дійсну адресу електронної пошти.',
+        tooLong: 'Адреса не може бути довшою за 254 символи.',
+      },
+      password: {
+        required: 'Введіть пароль.',
+        tooShort: 'Пароль має містити щонайменше 8 символів.',
+        tooLong: 'Пароль має бути не довшим за 128 символів.',
+      },
+    },
     form: {
       locationLabel: 'Локація',
       placeholder: 'Спробуйте Helsinki, Tokyo або New York',
@@ -189,6 +262,11 @@ const translations: Record<Language, TranslationNode> = {
     },
     provider: {
       placeholder: 'Провайдер',
+    },
+    history: {
+      label: 'Історія',
+      title: 'Пошук погоди',
+      empty: 'Збережених пошуків погоди ще немає.',
     },
     weather: {
       unavailable: 'Погода недоступна',

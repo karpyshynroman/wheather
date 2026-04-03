@@ -1,18 +1,26 @@
 import { QueryClientProvider } from '@tanstack/react-query';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { AuthModal } from './components/AuthModal';
 import { LanguageSwitcher } from './components/LanguageSwitcher';
 import { LocationForm } from './components/LocationForm';
 import { ProviderPlaceholder } from './components/ProviderPlaceholder';
 import { ProviderSwitcher } from './components/ProviderSwitcher';
+import { SearchHistoryPanel } from './components/SearchHistoryPanel';
 import { WeatherPanel } from './components/WeatherPanel';
+import { fetchCurrentUser, fetchSearchHistory } from './lib/auth-api';
+import { ApiError } from './lib/api';
 import { useTranslation } from './hooks/useTranslation';
 import { WeatherError } from './lib/errors';
 import { providerDefinitions } from './lib/providers';
 import { queryClient } from './lib/query-client';
 import { normalizeLocationInput, validateLocationInput } from './lib/validation';
 import type { LocationValidationErrorCode } from './lib/validation';
+import { useAuthMutation } from './hooks/useAuthMutation';
+import { useSaveSearchMutation } from './hooks/useSaveSearchMutation';
 import { useWeatherQuery } from './hooks/useWeatherQuery';
+import { useAuthStore } from './store/auth-store';
 import { useWeatherStore } from './store/weather-store';
+import { useQuery } from '@tanstack/react-query';
 
 function AppShell() {
   const providerId = useWeatherStore((state) => state.providerId);
@@ -23,10 +31,20 @@ function AppShell() {
   const setDraftLocation = useWeatherStore((state) => state.setDraftLocation);
   const setActiveLocation = useWeatherStore((state) => state.setActiveLocation);
   const setLanguage = useWeatherStore((state) => state.setLanguage);
+  const token = useAuthStore((state) => state.token);
+  const user = useAuthStore((state) => state.user);
+  const hydrated = useAuthStore((state) => state.hydrated);
+  const setSession = useAuthStore((state) => state.setSession);
+  const clearSession = useAuthStore((state) => state.clearSession);
+  const markHydrated = useAuthStore((state) => state.markHydrated);
   const provider = providerDefinitions[providerId];
   const { t } = useTranslation();
   const [validationErrors, setValidationErrors] = useState<LocationValidationErrorCode[]>([]);
+  const [authError, setAuthError] = useState<string | undefined>();
+  const [historyError, setHistoryError] = useState<string | undefined>();
+  const [authModalOpen, setAuthModalOpen] = useState(false);
   const weatherQuery = useWeatherQuery(providerId, activeLocation, language);
+  const lastSavedSearchRef = useRef<string | null>(null);
 
   useEffect(() => {
     if (typeof document !== 'undefined') {
@@ -34,10 +52,82 @@ function AppShell() {
     }
   }, [language]);
 
+  useEffect(() => {
+    lastSavedSearchRef.current = null;
+  }, [token, user?.id]);
+
+  useEffect(() => {
+    if (hydrated) {
+      return;
+    }
+
+    let active = true;
+
+    const bootstrap = async () => {
+      if (token) {
+        try {
+          const currentUser = await fetchCurrentUser(token);
+          if (active) {
+            setSession({ accessToken: token, user: currentUser });
+          }
+        } catch {
+          if (active) {
+            clearSession();
+          }
+        }
+      }
+
+      if (active) {
+        markHydrated();
+      }
+    };
+
+    void bootstrap();
+
+    return () => {
+      active = false;
+    };
+  }, [clearSession, hydrated, markHydrated, setSession, token]);
+
   const resolvedValidationErrors = useMemo(
     () => validationErrors.map((error) => t(`validation.${error}`)),
     [t, validationErrors],
   );
+
+  const authMutation = useAuthMutation({
+    onSuccess: (session) => {
+      setSession(session);
+      setAuthError(undefined);
+      setAuthModalOpen(false);
+    },
+    onError: (message) => {
+      setAuthError(message);
+    },
+  });
+  const saveSearchMutation = useSaveSearchMutation({
+    token,
+    onSuccess: () => {
+      if (user) {
+        void queryClient.invalidateQueries({ queryKey: ['history', user.id] });
+      }
+      setHistoryError(undefined);
+    },
+    onError: (message) => {
+      setHistoryError(message);
+    },
+  });
+
+  const historyQuery = useQuery({
+    queryKey: ['history', user?.id],
+    enabled: Boolean(token && user),
+    queryFn: async () => {
+      if (!token) {
+        return [];
+      }
+
+      return fetchSearchHistory(token);
+    },
+  });
 
   const statusText = useMemo(() => {
     if (!activeLocation) {
@@ -65,6 +155,49 @@ function AppShell() {
     return error instanceof Error ? t('weather.unavailable') : undefined;
   }, [t, weatherQuery.error]);
 
+  useEffect(() => {
+    if (!token || !user || !weatherQuery.data || !activeLocation || saveSearchMutation.isPending) {
+      return;
+    }
+
+    const searchQuery = activeLocation.trim();
+    const locationName = weatherQuery.data.locationName.trim();
+    const providerValue = String(providerId).trim();
+
+    if (searchQuery.length < 2 || locationName.length < 2 || providerValue.length === 0) {
+      return;
+    }
+
+    const signature = [providerId, activeLocation, weatherQuery.data.observedAt].join('|');
+    if (lastSavedSearchRef.current === signature) {
+      return;
+    }
+
+    lastSavedSearchRef.current = signature;
+
+    void saveSearchMutation
+      .mutateAsync({
+        providerId: providerValue as 'open-meteo' | 'wttr',
+        searchQuery,
+        locationName,
+        condition: weatherQuery.data.condition,
+        temperatureC: weatherQuery.data.temperatureC,
+        feelsLikeC: weatherQuery.data.feelsLikeC,
+      })
+      .catch((error) => {
+        if (error instanceof ApiError && error.status === 401) {
+          clearSession();
+          return;
+        }
+
+        if (error instanceof ApiError) {
+          setHistoryError(error.message);
+        } else {
+          setHistoryError(t('weather.unavailable'));
+        }
+      });
+  }, [activeLocation, clearSession, providerId, saveSearchMutation, token, user, weatherQuery.data]);
+
   const handleSubmit = () => {
     const errors = validateLocationInput(draftLocation);
     setValidationErrors(errors);
@@ -78,6 +211,15 @@ function AppShell() {
 
   return (
     <div className="min-h-screen px-4 py-5 sm:px-6 lg:px-10 lg:py-10">
+      <div className="fixed right-4 top-4 z-30 sm:right-6 sm:top-6 lg:right-10 lg:top-10">
+        <button
+          type="button"
+          onClick={() => setAuthModalOpen(true)}
+          className="rounded-full border border-white/10 bg-white/10 px-4 py-2 text-sm font-semibold text-white/85 transition hover:bg-white/15"
+        >
+          {t('auth.open')}
+        </button>
+      </div>
       <main
         className="mx-auto flex min-h-[calc(100vh-2.5rem)] w-full max-w-6xl flex-col justify-center lg:min-h-[calc(100vh-5rem)]"
         data-provider={providerId}
@@ -126,7 +268,7 @@ function AppShell() {
               </div>
             </div>
 
-            <div className="lg:sticky lg:top-8 lg:self-start">
+            <div className="space-y-4 lg:sticky lg:top-8 lg:self-start">
               {!weatherQuery.data && !weatherQuery.isFetching ? (
                 <ProviderPlaceholder provider={provider} />
               ) : (
@@ -136,8 +278,35 @@ function AppShell() {
                   error={weatherError}
                 />
               )}
+
+              {token && user ? (
+                <SearchHistoryPanel
+                  items={historyQuery.data ?? []}
+                  loading={historyQuery.isFetching && !historyQuery.data}
+                  error={historyError}
+                />
+              ) : null}
             </div>
           </div>
+          <AuthModal
+            open={authModalOpen}
+            user={user}
+            isSubmitting={authMutation.isPending}
+            error={authError}
+            onLogin={async (email, password) => {
+              await authMutation.mutateAsync({ email, password, mode: 'login' });
+            }}
+            onRegister={async (email, password) => {
+              await authMutation.mutateAsync({ email, password, mode: 'register' });
+            }}
+            onLogout={() => {
+              clearSession();
+              void queryClient.removeQueries({ queryKey: ['history'] });
+              setAuthError(undefined);
+              setAuthModalOpen(false);
+            }}
+            onClose={() => setAuthModalOpen(false)}
+          />
         </section>
       </main>
     </div>
