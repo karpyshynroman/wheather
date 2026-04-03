@@ -49,8 +49,9 @@ cd front
 npm install
 npm run dev
 ```
+Manual run - port `5372`
 
-The Vite dev server proxies `/api` to `http://localhost:4000`.
+Docker run - port `3000`
 
 ### 2. Backend
 
