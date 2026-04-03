@@ -1,0 +1,51 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: wheather-db
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: wheather_db
+    ports:
+      - '5433:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U user -d wheather_db']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  back:
+    build:
+      context: ./back
+      dockerfile: Dockerfile
+    container_name: wheather-back
+    environment:
+      PORT: 4000
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USERNAME: user
+      DB_PASSWORD: secret
+      DB_NAME: wheather_db
+      JWT_SECRET: secretDefault
+      JWT_EXPIRES_IN: 7d
+      CORS_ORIGIN: http://localhost:3000
+    ports:
+      - '4000:4000'
+    depends_on:
+      db:
+        condition: service_healthy
+
+  front:
+    build:
+      context: ./front
+      dockerfile: Dockerfile
+    container_name: wheather-front
+    ports:
+      - '3000:80'
+    depends_on:
+      - back
+
+volumes:
+  postgres_data:

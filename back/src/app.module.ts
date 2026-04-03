@@ -15,7 +15,7 @@ import { UsersModule } from './users/users.module';
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: AppConfig.dbHost,
-      port: Number(AppConfig.dbPort ?? 5423),
+      port: Number(AppConfig.dbPort ?? 5432),
       username: AppConfig.dbUsername,
       password: AppConfig.dbPassword,
       database: AppConfig.dbName,
